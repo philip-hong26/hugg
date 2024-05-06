@@ -5,6 +5,7 @@ import { sql } from "drizzle-orm";
 import {
   bigint,
   index,
+  int,
   mysqlTableCreator,
   timestamp,
   varchar,
@@ -18,17 +19,36 @@ import {
  */
 export const createTable = mysqlTableCreator((name) => `hugg_${name}`);
 
+const commons = {
+  id: bigint("id", { mode: "number" }).primaryKey().autoincrement(),
+  createdAt: timestamp("created_at")
+    .default(sql`CURRENT_TIMESTAMP`)
+    .notNull(),
+  updatedAt: timestamp("updated_at").onUpdateNow(),
+};
+
 export const posts = createTable(
-  "post",
+  "workflow",
   {
-    id: bigint("id", { mode: "number" }).primaryKey().autoincrement(),
+    ...commons,
+    candidateEmail: varchar("candidate_email", { length: 120 }).notNull(),
+    currentStep: int("current_step").notNull(),
     name: varchar("name", { length: 256 }),
-    createdAt: timestamp("created_at")
-      .default(sql`CURRENT_TIMESTAMP`)
-      .notNull(),
-    updatedAt: timestamp("updatedAt").onUpdateNow(),
   },
   (example) => ({
     nameIndex: index("name_idx").on(example.name),
-  })
+  }),
+);
+
+export const worflow_steps = createTable(
+  "workflow_steps",
+  {
+    ...commons,
+    workflowId: bigint("workflow_id", { mode: "number" }).notNull(),
+    step: varchar("step", { length: 256 }).notNull(),
+  },
+  (example) => ({
+    workflowIdIndex: index("workflow_id_idx").on(example.workflowId),
+    stepIndex: index("step_idx").on(example.step),
+  }),
 );
