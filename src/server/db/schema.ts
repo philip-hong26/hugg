@@ -1,6 +1,7 @@
 // Example model schema from the Drizzle docs
 // https://orm.drizzle.team/docs/sql-schema-declaration
 
+import type { InferInsertModel, InferSelectModel } from "drizzle-orm";
 import { sql } from "drizzle-orm";
 import {
   bigint,
@@ -27,7 +28,7 @@ const commons = {
   updatedAt: timestamp("updated_at").onUpdateNow(),
 };
 
-export const posts = createTable(
+export const workflows = createTable(
   "workflow",
   {
     ...commons,
@@ -40,7 +41,7 @@ export const posts = createTable(
   }),
 );
 
-export const worflow_steps = createTable(
+export const worflowSteps = createTable(
   "workflow_steps",
   {
     ...commons,
@@ -52,3 +53,8 @@ export const worflow_steps = createTable(
     stepIndex: index("step_idx").on(example.step),
   }),
 );
+
+export type WorkflowCreate = InferInsertModel<typeof workflows>;
+export type WorkflowSelect = InferSelectModel<typeof workflows>;
+export type WorkflowStepCreate = InferInsertModel<typeof worflowSteps>;
+export type WorkflowStepSelect = InferSelectModel<typeof worflowSteps>;

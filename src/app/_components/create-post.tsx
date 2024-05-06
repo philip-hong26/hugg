@@ -5,14 +5,16 @@ import { useState } from "react";
 
 import { api } from "@/trpc/react";
 
-export function CreatePost() {
+export function CreateWorkflow() {
   const router = useRouter();
   const [name, setName] = useState("");
+  const [email, setEmail] = useState("");
 
-  const createPost = api.post.create.useMutation({
+  const createWorkflow = api.workflow.create.useMutation({
     onSuccess: () => {
       router.refresh();
       setName("");
+      setEmail("");
     },
   });
 
@@ -20,7 +22,7 @@ export function CreatePost() {
     <form
       onSubmit={(e) => {
         e.preventDefault();
-        createPost.mutate({ name });
+        createWorkflow.mutate({ candidateEmail: email, name });
       }}
       className="flex flex-col gap-2"
     >
@@ -31,12 +33,19 @@ export function CreatePost() {
         onChange={(e) => setName(e.target.value)}
         className="w-full rounded-full px-4 py-2 text-black"
       />
+      <input
+        type="text"
+        placeholder="Email"
+        value={email}
+        onChange={(e) => setEmail(e.target.value)}
+        className="w-full rounded-full px-4 py-2 text-black"
+      />
       <button
         type="submit"
         className="rounded-full bg-white/10 px-10 py-3 font-semibold transition hover:bg-white/20"
-        disabled={createPost.isPending}
+        disabled={createWorkflow.isPending}
       >
-        {createPost.isPending ? "Submitting..." : "Submit"}
+        {createWorkflow.isPending ? "Submitting..." : "Submit"}
       </button>
     </form>
   );
